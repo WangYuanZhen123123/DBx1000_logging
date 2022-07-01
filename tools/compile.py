@@ -114,7 +114,7 @@ def insert_his(jobs, alg, workload='YCSB', cc_alg='NO_WAIT', log_type='LOG_DATA'
     jobs[name]["WORKLOAD"] = workload
     jobs[name]["LOG_TYPE"] = log_type
     jobs[name]["CC_ALG"] = cc_alg
-    jobs[name]["MAX_TXNS_PER_THREAD"] = '(150000)'
+    jobs[name]["MAX_TXNS_PER_THREAD"] = '(1500000)'
     jobs[name]['BIG_HASH_TABLE_MODE'] = '(true)'
     jobs[name]['PROCESS_DEPENDENCY_LOGGER'] = '(false)'
     if workload == 'YCSB':
@@ -251,36 +251,36 @@ if __name__ == '__main__':
     if True:
         benchmarks = ['YCSB', 'TPCC']
         for bench in benchmarks:
-            #insert_his('parallel', bench, 'LOG_DATA')
-            #insert_his('parallel', bench, 'LOG_COMMAND')
-            #insert_his('batch', bench, 'LOG_DATA')
+            # insert_his('parallel', bench, 'LOG_DATA')
+            # insert_his('parallel', bench, 'LOG_COMMAND')
+            # insert_his('batch', bench, 'LOG_DATA')
 
-            insert_his(jobs, 'taurus', bench, 'NO_WAIT', 'LOG_DATA', per_worker_rec='false')
-            insert_his(jobs, 'taurus', bench, 'NO_WAIT', 'LOG_COMMAND', per_worker_rec='false')
-            insert_his(jobs, 'taurus', bench, 'SILO', 'LOG_DATA', per_worker_rec='false')
-            insert_his(jobs, 'taurus', bench, 'SILO', 'LOG_COMMAND', per_worker_rec='false')
+            # insert_his(jobs, 'taurus', bench, 'NO_WAIT', 'LOG_DATA', per_worker_rec='false')
+            # insert_his(jobs, 'taurus', bench, 'NO_WAIT', 'LOG_COMMAND', per_worker_rec='false')
+            # insert_his(jobs, 'taurus', bench, 'SILO', 'LOG_DATA', per_worker_rec='false')
+            # insert_his(jobs, 'taurus', bench, 'SILO', 'LOG_COMMAND', per_worker_rec='false')
             
-            insert_his(jobs, 'taurus', bench, 'NO_WAIT', 'LOG_DATA', prevent_locktable='true')
-            insert_his(jobs, 'taurus', bench, 'NO_WAIT', 'LOG_COMMAND', prevent_locktable='true')
-            insert_his(jobs, 'taurus', bench, 'SILO', 'LOG_DATA', prevent_locktable='true')
-            insert_his(jobs, 'taurus', bench, 'SILO', 'LOG_COMMAND', prevent_locktable='true')
+            # insert_his(jobs, 'taurus', bench, 'NO_WAIT', 'LOG_DATA', prevent_locktable='true')
+            # insert_his(jobs, 'taurus', bench, 'NO_WAIT', 'LOG_COMMAND', prevent_locktable='true')
+            # insert_his(jobs, 'taurus', bench, 'SILO', 'LOG_DATA', prevent_locktable='true')
+            # insert_his(jobs, 'taurus', bench, 'SILO', 'LOG_COMMAND', prevent_locktable='true')
             
 
-            insert_his(jobs, 'no', bench, 'NO_WAIT', 'LOG_DATA')
-            insert_his(jobs, 'no', bench, 'SILO', 'LOG_DATA')
+            # insert_his(jobs, 'no', bench, 'NO_WAIT', 'LOG_DATA')
+            # insert_his(jobs, 'no', bench, 'SILO', 'LOG_DATA')
             
-            insert_his(jobs, 'serial', bench, 'SILO', 'LOG_DATA')
-            insert_his(jobs, 'serial', bench, 'SILO', 'LOG_COMMAND')
-            insert_his(jobs, 'serial', bench, 'NO_WAIT', 'LOG_DATA')
-            insert_his(jobs, 'serial', bench, 'NO_WAIT', 'LOG_COMMAND')
+            # insert_his(jobs, 'serial', bench, 'SILO', 'LOG_DATA')
+            # insert_his(jobs, 'serial', bench, 'SILO', 'LOG_COMMAND')
+            # insert_his(jobs, 'serial', bench, 'NO_WAIT', 'LOG_DATA')
+            # insert_his(jobs, 'serial', bench, 'NO_WAIT', 'LOG_COMMAND')
             insert_his(jobs, 'taurus', bench, 'SILO', 'LOG_DATA')
             insert_his(jobs, 'taurus', bench, 'NO_WAIT', 'LOG_DATA')
             insert_his(jobs, 'taurus', bench, 'NO_WAIT', 'LOG_COMMAND')
             insert_his(jobs, 'taurus', bench, 'SILO', 'LOG_COMMAND')
-            insert_his(jobs, 'batch', bench, 'SILO', 'LOG_DATA')
-            insert_his(jobs, 'plover', bench, 'NO_WAIT', 'LOG_DATA')
+            # insert_his(jobs, 'batch', bench, 'SILO', 'LOG_DATA')
+            # insert_his(jobs, 'plover', bench, 'NO_WAIT', 'LOG_DATA')
 
-            insert_his(jobs, 'serial', bench, 'NO_WAIT', 'LOG_COMMAND', withold_log='true')
+            # insert_his(jobs, 'serial', bench, 'NO_WAIT', 'LOG_COMMAND', withold_log='true')
     
     if len(sys.argv) > 1:
         filter = sys.argv[1]

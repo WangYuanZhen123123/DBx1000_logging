@@ -208,6 +208,8 @@ void LogManager::init(string log_file_name)
 	 
 		assert(*_lsn  == 0);
 		uint32_t bytes = write(_fd, (uint64_t*)_lsn, sizeof(uint64_t));
+		std::cerr<<"---_fd: "<<_fd<<std::endl;
+		std::cerr<<"---bytes: "<<bytes<<std::endl;
 		assert(bytes == sizeof(uint64_t));
 		fsync(_fd);
 	 
