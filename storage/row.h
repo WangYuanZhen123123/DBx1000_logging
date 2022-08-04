@@ -91,8 +91,8 @@ public:
 
 	// for concurrency control. can be lock, timestamp etc.
 	//RC get_row(access_t type, txn_man * txn, row_t *& row);
-	RC get_row(access_t type, txn_man * txn, char *&data);
-	void return_row(access_t type, txn_man * txn, char * data, RC rc_in);
+	RC get_row(access_t type, txn_man * txn, char *&data, row_t *& row);
+	void return_row(access_t type, txn_man * txn, char * data, row_t * row, RC rc_in);
 	
 #if CC_ALG == DL_DETECT || CC_ALG == NO_WAIT || CC_ALG == WAIT_DIE
     Row_lock * manager;
@@ -124,6 +124,7 @@ public:
 #endif
 #endif
 
+	// 这部分数据的空间对应met-cache的空间
 	char * data;
 	table_t * table;
 

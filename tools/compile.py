@@ -108,6 +108,9 @@ def insert_his(jobs, alg, workload='YCSB', cc_alg='NO_WAIT', log_type='LOG_DATA'
     if alg == 'plover':
         jobs[name]['USE_LOCKTABLE'] = 'false'
     
+    if cc_alg == 'MVCC':
+        jobs[name]['USE_LOCKTABLE'] = 'false'
+
     jobs[name]["CPU_FREQ"] = CPU_FREQ
 
     jobs[name]["LOG_ALGORITHM"] = "LOG_%s" % alg.upper()
@@ -249,7 +252,8 @@ if __name__ == '__main__':
     # benchmarks = ['TPCC']
     filter = None
     if True:
-        benchmarks = ['YCSB', 'TPCC']
+        # benchmarks = ['YCSB', 'TPCC']
+        benchmarks = ['TPCC']
         for bench in benchmarks:
             # insert_his('parallel', bench, 'LOG_DATA')
             # insert_his('parallel', bench, 'LOG_COMMAND')
@@ -266,17 +270,18 @@ if __name__ == '__main__':
             # insert_his(jobs, 'taurus', bench, 'SILO', 'LOG_COMMAND', prevent_locktable='true')
             
 
-            # insert_his(jobs, 'no', bench, 'NO_WAIT', 'LOG_DATA')
+            insert_his(jobs, 'no', bench, 'MVCC', 'LOG_DATA')
             # insert_his(jobs, 'no', bench, 'SILO', 'LOG_DATA')
+            # insert_his(jobs, 'no', bench, 'MVCC', 'LOG_DATA')
             
             # insert_his(jobs, 'serial', bench, 'SILO', 'LOG_DATA')
             # insert_his(jobs, 'serial', bench, 'SILO', 'LOG_COMMAND')
             # insert_his(jobs, 'serial', bench, 'NO_WAIT', 'LOG_DATA')
             # insert_his(jobs, 'serial', bench, 'NO_WAIT', 'LOG_COMMAND')
-            insert_his(jobs, 'taurus', bench, 'SILO', 'LOG_DATA')
-            insert_his(jobs, 'taurus', bench, 'NO_WAIT', 'LOG_DATA')
-            insert_his(jobs, 'taurus', bench, 'NO_WAIT', 'LOG_COMMAND')
-            insert_his(jobs, 'taurus', bench, 'SILO', 'LOG_COMMAND')
+            # insert_his(jobs, 'taurus', bench, 'SILO', 'LOG_DATA')
+            # insert_his(jobs, 'taurus', bench, 'NO_WAIT', 'LOG_DATA')
+            # insert_his(jobs, 'taurus', bench, 'NO_WAIT', 'LOG_COMMAND')
+            # insert_his(jobs, 'taurus', bench, 'SILO', 'LOG_COMMAND')
             # insert_his(jobs, 'batch', bench, 'SILO', 'LOG_DATA')
             # insert_his(jobs, 'plover', bench, 'NO_WAIT', 'LOG_DATA')
 

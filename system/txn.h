@@ -21,6 +21,8 @@ class Access {
 public:
 	access_t 	type;
 	row_t * 	orig_row;
+	row_t * 	row_data;
+	// row_t * 	row_orig_data;
 	char * 		data;
 	char * 		orig_data;
 

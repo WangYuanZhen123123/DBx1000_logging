@@ -11,9 +11,11 @@ class txn_man;
 #if CC_ALG == MVCC
 struct WriteHisEntry {
 	bool valid;		// whether the entry contains a valid version
-	bool reserved; 	// when valid == false, whether the entry is reserved by a P_REQ 
+	bool reserved; 	// when valid == false, whether the entry is reserved by a P_REQ
+	bool in_memory;  // 这一版本数据是否在内存中 
 	ts_t ts;
 	row_t * row;
+	void * nvm_location;    
 };
 
 struct ReqEntry {
@@ -33,7 +35,7 @@ private:
  	pthread_mutex_t * latch;
 	volatile bool blatch;
 
-	row_t * _row;
+	row_t * _row;   // 垃圾回收后，当前最旧的版本，还可能会访问到
 
 	RC conflict(TsType type, ts_t ts, uint64_t thd_id = 0);
 	void update_buffer(txn_man * txn, TsType type);

@@ -327,7 +327,7 @@ void row_t::free_row()
 }
 
 //RC row_t::get_row(access_t type, txn_man * txn, row_t *& row) {
-RC row_t::get_row(access_t type, txn_man *txn, char *&data)
+RC row_t::get_row(access_t type, txn_man *txn, char *&data, row_t *& row)
 {
 	RC rc = RCOK;
 	//uint64_t starttime = get_sys_clock();
@@ -425,6 +425,29 @@ RC row_t::get_row(access_t type, txn_man *txn, char *&data)
 	//INC_INT_STATS(time_debug7, get_sys_clock() - afterlockget);
 	return rc;
 
+#elif CC_ALG == MVCC
+	// uint64_t thd_id = txn->get_thd_id();
+	// TODO need to initialize the table/catalog information.
+	TsType ts_type = (type == RD)? R_REQ : P_REQ; 
+	rc = this->manager->access(txn, ts_type, row);
+	if (rc == RCOK ) {
+		row = txn->cur_row;
+		data = row->get_data();
+	} else if (rc == WAIT) {
+		// uint64_t t1 = get_sys_clock();
+		while (!txn->ts_ready)
+			PAUSE
+		// uint64_t t2 = get_sys_clock();
+		// INC_TMP_STATS(thd_id, time_wait, t2 - t1);
+		row = txn->cur_row;
+		data = row->get_data();
+	}
+	if (rc != Abort) {
+		row->table = get_table();
+		assert(row->get_schema() == this->get_schema());
+	}
+	return rc;
+
 #elif CC_ALG == TICTOC || CC_ALG == SILO
 	// like OCC, tictoc also makes a local copy for each read/write
 	//row->table = get_table();
@@ -448,7 +471,7 @@ RC row_t::get_row(access_t type, txn_man *txn, char *&data)
 // delete during history cleanup.
 // For TIMESTAMP, the row will be explicity deleted at the end of access().
 // (cf. row_ts.cpp)
-void row_t::return_row(access_t type, txn_man *txn, char *data, RC rc_in)
+void row_t::return_row(access_t type, txn_man *txn, char *data, row_t * row, RC rc_in)
 {
 //uint64_t starttime = get_sys_clock();
 #if CC_ALG == WAIT_DIE || CC_ALG == NO_WAIT || CC_ALG == DL_DETECT

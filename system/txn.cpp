@@ -390,7 +390,7 @@ RC txn_man::cleanup(RC in_rc)
 		#endif
 		INC_INT_STATS(time_locktable_release, get_sys_clock() - current_time);
 #else
-		orig_r->return_row(type, this, newdata, rc);
+		orig_r->return_row(type, this, newdata, accesses[rid]->row_data, rc);
 #endif
 #if CC_ALG != TICTOC && CC_ALG != SILO
 		accesses[rid]->data = NULL;  // will not need this any more
@@ -755,7 +755,7 @@ RC txn_man::get_row(row_t * row, access_t type, char * &data) { //TODO: change t
 	#endif
 	
 #else
-	rc = row->get_row(type, this, accesses[ row_cnt ]->data);
+	rc = row->get_row(type, this, accesses[ row_cnt ]->data, accesses[ row_cnt]->row_data);
 #endif
 
 #if LOG_ALGORITHM == LOG_TAURUS

@@ -13,11 +13,12 @@ void Row_mvcc::init(row_t * row) {
 	_his_len = 4;
 	_req_len = _his_len;
 
-	_write_history = (WriteHisEntry *) MALLOC(sizeof(WriteHisEntry) * _his_len, GET_THD_ID, GET_THD_ID);
+	_write_history = (WriteHisEntry *) MALLOC(sizeof(WriteHisEntry) * _his_len, GET_THD_ID);
 	_requests = (ReqEntry *) MALLOC(sizeof(ReqEntry) * _req_len, GET_THD_ID);
 	for (uint32_t i = 0; i < _his_len; i++) {
 		_requests[i].valid = false;
 		_write_history[i].valid = false;
+		_write_history[i].reserved = false;
 		_write_history[i].row = NULL;
 	}
 	_latest_row = _row;
@@ -97,14 +98,14 @@ Row_mvcc::double_list(uint32_t list)
 RC Row_mvcc::access(txn_man * txn, TsType type, row_t * row) {
 	RC rc = RCOK;
 	ts_t ts = txn->get_ts();
-uint64_t t1 = get_sys_clock();
+// uint64_t t1 = get_sys_clock();
 	if (g_central_man)
 		glob_manager->lock_row(_row);
 	else
 		while (!ATOM_CAS(blatch, false, true))
 			PAUSE
 		//pthread_mutex_lock( latch );
-uint64_t t2 = get_sys_clock();
+// uint64_t t2 = get_sys_clock();
 INC_STATS(txn->get_thd_id(), debug4, t2 - t1);
 
 #if DEBUG_CC
@@ -149,8 +150,10 @@ INC_STATS(txn->get_thd_id(), debug4, t2 - t1);
 			}
 			if (the_i == _his_len) 
 				txn->cur_row = _row;
-   			else 
+   			else{
+				// 申请一个met-cache的空间给_write_history[the_i].row.data，然后通过viper读出数据放到里面，然后返回row
 	   			txn->cur_row = _write_history[the_i].row;
+			}
 		}
 	} else if (type == P_REQ) {
 		if (ts < _latest_wts || ts < _max_served_rts || (_exists_prewrite && _prewrite_ts > ts))
@@ -169,7 +172,7 @@ INC_STATS(txn->get_thd_id(), debug4, t2 - t1);
 	} else if (type == W_REQ) {
 		rc = RCOK;
 		assert(ts > _latest_wts);
-		assert(row == _write_history[_prewrite_his_id].row);
+		// assert(row == _write_history[_prewrite_his_id].row);
 		_write_history[_prewrite_his_id].valid = true;
 		_write_history[_prewrite_his_id].ts = ts;
 		_latest_wts = ts;
@@ -207,6 +210,7 @@ Row_mvcc::reserveRow(ts_t ts, txn_man * txn)
 	{
 		ts_t max_recycle_ts = 0;
 		ts_t idx = _his_len;
+		// 找到过时的版本对应的最大时间戳
 		for (uint32_t i = 0; i < _his_len; i++) {
 			if (_write_history[i].valid
 				&& _write_history[i].ts < min_ts
@@ -222,6 +226,7 @@ Row_mvcc::reserveRow(ts_t ts, txn_man * txn)
 			_row = _write_history[idx].row;
 			_write_history[idx].row = temp;
 			_oldest_wts = max_recycle_ts;
+			// 根据上面得到的最大时间戳回收旧版本
 			for (uint32_t i = 0; i < _his_len; i++) {
 				if (_write_history[i].valid
 					&& _write_history[i].ts <= max_recycle_ts)

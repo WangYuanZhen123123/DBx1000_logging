@@ -418,6 +418,7 @@ public:
                 PAUSE
             }
         }
+#elif CC_ALG == MVCC
 
 #else
         lock_t lt = (type == RD || type == SCAN) ? LOCK_SH_T : LOCK_EX_T;
